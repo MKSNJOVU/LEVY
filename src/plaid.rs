@@ -46,6 +46,12 @@ pub struct PlaidTransaction {
     pub name: Option<String>,
     #[serde(default)]
     pub pending: bool,
+    pub personal_finance_category: Option<PersonalFinanceCategory>,
+}
+#[derive(Debug, Deserialize)]
+pub struct PersonalFinanceCategory{
+    pub primary: String,
+    pub detailed: String,
 }
 
 #[derive(Debug, Deserialize)]
