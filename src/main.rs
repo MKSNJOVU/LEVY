@@ -1,8 +1,12 @@
 mod plaid;
 mod sync;
-
+#[path = "../structs/money_medium_structs.rs"]
+pub mod money_medium_structs;
 #[path = "../structs/account_structs.rs"]
-mod account_structs;
+pub mod account_structs;
+
+#[path = "../traits/money_medium_traits.rs"]
+mod money_medium_traits;
 
 use sqlx::sqlite::SqlitePoolOptions;
 
