@@ -5,15 +5,12 @@ edition = "2024"
 
 [dependencies]
 tokio = { version = "1.53.2", features = ["full"] }
-sqlx = { version = "0.9.0", features = ["runtime-tokio","sqlite"], }
+sqlx = { version = "0.9.0", features = ["runtime-tokio", "sqlite"] }
 
 
 # gRPC Microservices
 tonic = "^0.14.6"
 prost = "^0.14.4"
-
-# Bank API Integration
-plaid = "9.0.1"
 
 # JSON utilities
 serde = {version = "^1.0.229", features = ["default"]}
@@ -21,6 +18,10 @@ serde_json = "^1.0.151"
 
 # Environment Files
 dotenvy = {version = "0.15.7"}
+
+# Plaid HTTPS. The generated `plaid` crate is pinned to rustls-webpki 0.101.
+reqwest = { version = "0.13.5", default-features = false, features = ["json", "rustls-no-provider"] }
+rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12"] }
 
 [build-dependencies]
 tonic-build = "0.14.6"

@@ -1,0 +1,26 @@
+{
+  "name": "LEVY Rust Backend",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "editor.formatOnSave": true,
+        "rust-analyzer.check.command": "clippy"
+      },
+      "extensions": [
+        "rust-lang.rust-analyzer",
+        "tamasfe.even-better-toml",
+        "zxh404.vscode-proto3",
+        "mtxr.sqltools",
+        "mtxr.sqltools-driver-sqlite"
+      ]
+    }
+  },
+
+  "postCreateCommand": "cargo install sqlx-cli --no-default-features --features native-tls,sqlite",
+
+  "remoteUser": "vscode"
+}
