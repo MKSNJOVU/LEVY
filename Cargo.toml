@@ -1,0 +1,25 @@
+[package]
+name = "Levy"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+tokio = { version = "1.53.2", features = ["full"] }
+sqlx = { version = "0.9.0", features = ["runtime-tokio","sqlite"], }
+
+# gRPC Microservices
+tonic = "^0.14.6"
+prost = "^0.14.4"
+
+# Bank API Integration
+plaid = "9.0.1"
+
+# JSON utilities
+serde = {version = "^1.0.229", features = ["default"]}
+serde_json = "^1.0.151"
+
+# Environment Files
+dotenvy = {version = "0.15.7"}
+
+[build-dependencies]
+tonic-build = "0.14.6"

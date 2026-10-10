@@ -1,0 +1,16 @@
+# Build artifacts
+target/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Secrets and Environment
+.env
+.env.local
+keys/
+
+# Other IDE specifics
+.idea/
+.vscode/

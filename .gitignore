@@ -1,0 +1,17 @@
+# Rust compilation artifacts
+/target/
+**/*.rs.bk
+
+# Database files
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+*.sql   
+
+# Environment and Secrets
+.env
+
+# IDE Files
+.idea/
+.vscode/
