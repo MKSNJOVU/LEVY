@@ -1,0 +1,12 @@
+---
+description: Auto-route non-trivial tasks through project skills in .cursor/skills
+alwaysApply: true
+---
+
+# Agent Skills Routing Protocol
+
+Before executing non-trivial architecture, refactoring, or implementation tasks:
+1. Identify the task phase and inspect `.cursor/skills/<matching-skill>/SKILL.md`.
+2. Follow the step-by-step process defined in that skill file.
+3. Open any referenced checklist or `reference.md` linked within that skill.
+4. Do not guess conventions when an established skill exists.
