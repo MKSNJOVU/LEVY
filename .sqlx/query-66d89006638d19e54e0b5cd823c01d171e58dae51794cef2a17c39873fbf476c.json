@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "INSERT INTO plaid_items (access_token, item_id, inception) VALUES (?,?,?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 3
+    },
+    "nullable": []
+  },
+  "hash": "66d89006638d19e54e0b5cd823c01d171e58dae51794cef2a17c39873fbf476c"
+}
