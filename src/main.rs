@@ -7,6 +7,7 @@ pub mod account_structs;
 
 #[path = "../traits/money_medium_traits.rs"]
 mod money_medium_traits;
+mod plaid_handlers;
 
 use sqlx::sqlite::SqlitePoolOptions;
 

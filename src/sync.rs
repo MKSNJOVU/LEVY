@@ -220,6 +220,36 @@ async fn upsert_transaction(
     Ok(())
 }
 
+/// Shell for executing the transaction sync with strict time boundaries
+pub async fn sync_and_prune_transactions(
+    pool: &SqlitePool,
+    plaid_client: &PlaidClient,
+    access_token: &str,
+    inception_date: &str, // Passed in from your DB query of the plaid_items table
+) -> Result<(), String> {
+
+    // 1. Fetch from Plaid
+    // todo!("Call plaid_client.transactions_sync(access_token, cursor).await")
+
+    // 2. Process Added Transactions
+    // todo!("Loop over the `added` transactions from the SyncPage")
+    // todo!("Check: if tx.pending { continue; }")
+
+    // todo!("Check: if tx.date < inception_date { continue; }")
+
+    // todo!("If it passes both checks, INSERT the transaction into SQLite")
+
+    // 3. Process Modified and Removed
+    // todo!("Loop over `modified` transactions and UPDATE them in SQLite if they meet criteria")
+    // todo!("Loop over `removed` transactions and DELETE them from SQLite based on transaction_id")
+
+    // 4. Prune Old Data
+    // todo!("Calculate the cutoff date: current date minus 24 months")
+    // todo!("Execute a DELETE query against your database for any data older than the cutoff date")
+
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use std::sync::Arc;

@@ -6,6 +6,9 @@ CREATE TABLE plaid_items (
     environment TEXT NOT NULL
 );
 
+
+ALTER TABLE plaid_items ADD COLUMN inception DATETIME DEFAULT CURRENT_TIMESTAMP;
+
 ALTER TABLE accounts ADD COLUMN item_id INTEGER REFERENCES plaid_items (id);
 
 CREATE UNIQUE INDEX accounts_plaid_account_id_key ON accounts (plaid_account_id);
