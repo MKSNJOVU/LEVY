@@ -1,0 +1,27 @@
+name: Rust Backend Checks
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  SQLX_OFFLINE: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Run Cargo Check
+        # This compiles the code without generating the final binary
+        run: cargo check --verbose
+
+      - name: Run Clippy (Linter)
+        # This catches common Rust mistakes and enforces best practices
+        run: cargo clippy -- -D warnings
