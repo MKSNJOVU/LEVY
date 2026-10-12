@@ -1,12 +1,16 @@
 use crate::money_medium_structs::*;
 use crate::plaid::*;
 use sqlx::SqlitePool;
+
+#[allow(dead_code)]
 pub trait ILevyOrchestration: IUserSavingsGoal + ICalculateMoneyMedium {}
 
+#[allow(dead_code)]
 pub trait IUserSavingsGoal {
     async fn log_user_savings_goal(&self, pool: &SqlitePool) -> Result<i64, sqlx::Error>;
 }
 
+#[allow(dead_code)]
 pub trait ICalculateMoneyMedium {
     async fn user_income(&self) -> i64;
     async fn user_expense(&self) -> i64;
@@ -52,7 +56,7 @@ impl ILevyOrchestration for UserMoneyMedium {}
 impl UserMoneyMedium {
     pub fn process_plaid_transactions(&mut self, transactions: Vec<PlaidTransaction>) {
         for tx in transactions {
-            if tx.pending == true {
+            if tx.pending  {
                 continue;
             }
 

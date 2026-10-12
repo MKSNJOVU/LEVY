@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Levy</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="top">
+      <p class="wordmark">Levy</p>
+      <nav aria-label="Months">
+        <div id="month-strip" class="month-strip"></div>
+      </nav>
+    </header>
+
+    <main id="month-screen">
+      <p id="empty" class="empty" role="status" hidden>no data available</p>
+
+      <section id="result">
+        <h1 id="status-word" class="status"></h1>
+        <p id="figure" class="figure" data-cents="">
+          <span class="amount">
+            <span id="sign" class="sign">$</span>
+            <span id="dollars" class="dollars"></span>
+            <span id="cents" class="cents"></span>
+          </span>
+        </p>
+
+        <div id="goal-read" class="goal-read">
+          <span class="goal-mark" aria-hidden="true"></span>
+          <span class="goal-label">Goal</span>
+          <button type="button" id="goal-button"></button>
+        </div>
+        <form id="goal-form" class="goal-form" hidden>
+          <label for="goal-input" id="goal-label">Goal amount</label>
+          <input id="goal-input" name="goal" inputmode="decimal" autocomplete="off" />
+          <p id="goal-error" class="goal-error" role="alert" hidden></p>
+          <div class="goal-actions">
+            <button type="submit">Save</button>
+            <button type="button" id="goal-cancel">Cancel</button>
+          </div>
+        </form>
+
+        <section id="comparison" aria-labelledby="comparison-title">
+          <h2 id="comparison-title">This month</h2>
+          <div class="bar" id="bar">
+            <span id="bar-room" class="bar-room"></span>
+            <span id="bar-varying" class="bar-varying"></span>
+          </div>
+          <p class="bar-key">
+            <span><i class="swatch varying" aria-hidden="true"></i> Varying <span id="varying-amt"></span></span>
+            <span><i class="swatch room" aria-hidden="true"></i> Room after goal <span id="room-amt"></span></span>
+          </p>
+        </section>
+
+        <section aria-labelledby="buckets-title">
+          <h2 id="buckets-title">Varying</h2>
+          <ul id="buckets" class="buckets"></ul>
+        </section>
+      </section>
+
+      <section aria-labelledby="accounts-title">
+        <h2 id="accounts-title">Accounts</h2>
+        <div id="accounts" class="accounts"></div>
+      </section>
+    </main>
+
+    <section id="transactions-screen" hidden>
+      <button type="button" id="back" class="back">Back</button>
+      <h1 id="tx-title"></h1>
+      <ul id="tx-list" class="tx-list"></ul>
+      <p id="tx-empty" class="empty" hidden>No posted transactions this month.</p>
+    </section>
+
+    <script src="fixtures.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
