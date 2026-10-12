@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "INSERT INTO user_goals (goal_amount) VALUES (?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": []
+  },
+  "hash": "06e21a0a93a33ef0deef070d05ff3fe0e397efaabafd21a4ba3f8cc639bd43d5"
+}

@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "DELETE FROM monthly_category_buckets WHERE summary_id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": []
+  },
+  "hash": "887aa6acc709a69a57228ee18477b296beb0338a500d761dbe977aa3662d7717"
+}

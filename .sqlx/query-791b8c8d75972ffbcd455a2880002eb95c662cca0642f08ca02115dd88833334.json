@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "INSERT INTO monthly_category_buckets (summary_id, category_name, amount) VALUES (?, ?, ?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 3
+    },
+    "nullable": []
+  },
+  "hash": "791b8c8d75972ffbcd455a2880002eb95c662cca0642f08ca02115dd88833334"
+}

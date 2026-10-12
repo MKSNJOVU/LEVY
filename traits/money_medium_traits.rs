@@ -218,4 +218,109 @@ impl UserMoneyMedium {
             }
         }
     }
+
+    /// Calculates the monthly totals from SQLite and upserts the summary and buckets.
+    pub async fn close_out_month(
+        &self,
+        pool: &SqlitePool,
+        target_month: &str,
+    ) -> Result<(), sqlx::Error> {
+        // Posted charges for this calendar month. Dates are stored as YYYY-MM-DD.
+        let transactions = sqlx::query!(
+            r#"
+            SELECT
+                id,
+                account_id,
+                amount,
+                date,
+                description,
+                plaid_transaction_id,
+                pending,
+                category
+            FROM transactions
+            WHERE substr(date, 1, 7) = ?
+              AND pending = 0
+            "#,
+            target_month
+        )
+        .fetch_all(pool)
+        .await?;
+
+        // Amounts in transactions are already integer cents.
+        let mut income: i64 = 0;
+        let mut fixed_expense: i64 = 0;
+        let mut varying_buckets: std::collections::BTreeMap<String, i64> =
+            std::collections::BTreeMap::new();
+
+        for item in transactions {
+            let amount = item.amount;
+            let category_name = item.category.unwrap_or_default();
+            match category_name.as_str() {
+                "INCOME" => income += amount.abs(),
+                "RENT_AND_UTILITIES" | "LOAN_PAYMENTS" | "INSURANCE" => fixed_expense += amount,
+                _ => {
+                    varying_buckets
+                        .entry(category_name)
+                        .and_modify(|total| *total += amount)
+                        .or_insert(amount);
+                }
+            }
+        }
+
+        let varying_expense: i64 = varying_buckets.values().copied().sum();
+        let money_medium = income - fixed_expense;
+        let varying_budget = money_medium - self.user_goal;
+        let missed_goal_amount = if varying_expense > varying_budget {
+            varying_expense - varying_budget
+        } else {
+            0
+        };
+
+        let mut tx = pool.begin().await?;
+
+        let summary_id: i64 = sqlx::query_scalar!(r#"INSERT INTO monthly_summaries (month_year,
+            income, fixed_expenses, varying_expenses,
+            goal_amount, money_medium, miss_amount) VALUES (?,?,?,?,?,?,?)
+            ON CONFLICT (month_year) DO UPDATE SET
+            income = excluded.income,
+            fixed_expenses = excluded.fixed_expenses,
+            varying_expenses = excluded.varying_expenses,
+            goal_amount = excluded.goal_amount,
+            money_medium = excluded.money_medium,
+            miss_amount = excluded.miss_amount
+            RETURNING id"#,
+            target_month,
+            income,
+            fixed_expense,
+            varying_expense,
+            self.user_goal,
+            money_medium,
+            missed_goal_amount
+        )
+        .fetch_one(&mut *tx)
+        .await?;
+
+        sqlx::query!(
+            "DELETE FROM monthly_category_buckets WHERE summary_id = ?",
+            summary_id
+        )
+        .execute(&mut *tx)
+        .await?;
+
+        for (category_name, bucket_amount) in &varying_buckets {
+            if *bucket_amount > 0 {
+                sqlx::query!(
+                    "INSERT INTO monthly_category_buckets (summary_id, category_name, amount) VALUES (?, ?, ?)",
+                    summary_id,
+                    category_name,
+                    bucket_amount
+                )
+                .execute(&mut *tx)
+                .await?;
+            }
+        }
+
+        tx.commit().await?;
+        Ok(())
+    }
 }

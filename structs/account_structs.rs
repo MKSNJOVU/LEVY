@@ -21,6 +21,7 @@ pub struct Transaction {
     pub description: Option<String>,
     pub plaid_transaction_id: Option<String>,
     pub pending: i64,
+    pub category: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]

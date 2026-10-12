@@ -191,16 +191,21 @@ async fn upsert_transaction(
 ) -> Result<(), String> {
     let amount = dollars_to_cents(&transaction.amount.to_string())?;
     let pending: i64 = if transaction.pending { 1 } else { 0 };
+    let category = transaction
+        .personal_finance_category
+        .as_ref()
+        .map(|category| category.primary.as_str());
     sqlx::query(
         "INSERT INTO transactions
-            (account_id, amount, date, description, plaid_transaction_id, pending)
-         VALUES (?, ?, ?, ?, ?, ?)
+            (account_id, amount, date, description, plaid_transaction_id, pending, category)
+         VALUES (?, ?, ?, ?, ?, ?, ?)
          ON CONFLICT(plaid_transaction_id) DO UPDATE SET
             account_id = excluded.account_id,
             amount = excluded.amount,
             date = excluded.date,
             description = excluded.description,
-            pending = excluded.pending",
+            pending = excluded.pending,
+            category = excluded.category",
     )
     .bind(account_id)
     .bind(amount)
@@ -208,6 +213,7 @@ async fn upsert_transaction(
     .bind(&transaction.name)
     .bind(&transaction.transaction_id)
     .bind(pending)
+    .bind(category)
     .execute(&mut **tx)
     .await
     .map_err(|err| err.to_string())?;
@@ -354,7 +360,7 @@ mod tests {
 
     async fn load_transactions(pool: &sqlx::SqlitePool) -> Vec<Transaction> {
         sqlx::query_as(
-            "SELECT id, account_id, amount, date, description, plaid_transaction_id, pending
+            "SELECT id, account_id, amount, date, description, plaid_transaction_id, pending, category
              FROM transactions
              ORDER BY id",
         )
