@@ -221,7 +221,6 @@ async fn upsert_transaction(
 }
 
 /// Shell for executing the transaction sync with strict time boundaries
-
 #[allow(dead_code)]
 pub async fn sync_and_prune_transactions(
     pool: &SqlitePool,
@@ -282,13 +281,13 @@ pub async fn sync_and_prune_transactions(
         }
 
         for tx in &transactions.removed {
-            let result_removed = sqlx::query!(
+            sqlx::query!(
                 "DELETE FROM transactions WHERE plaid_transaction_id = ?",
                 tx.transaction_id
             )
             .execute(pool)
             .await
-            .map_err(|e| e.to_string());
+            .map_err(|e| e.to_string())?;
         }
 
         if !transactions.has_more {
