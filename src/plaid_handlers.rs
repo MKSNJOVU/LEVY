@@ -2,6 +2,7 @@ use crate::plaid::*;
 use chrono::prelude::*;
 use sqlx::SqlitePool;
 
+#[allow(dead_code)]
 pub async fn handle_create_link_token(plaid_client: &PlaidClient) -> Result<String, String> {
     let response = plaid_client
         .create_link_token()
@@ -10,6 +11,7 @@ pub async fn handle_create_link_token(plaid_client: &PlaidClient) -> Result<Stri
     Ok(response)
 }
 
+#[allow(dead_code)]
 pub async fn handle_exchange_public_token(
     pool: &SqlitePool,
     plaid_client: &PlaidClient,

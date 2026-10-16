@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "DELETE FROM transactions WHERE substr(date, 1, 7) < ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": []
+  },
+  "hash": "632726378f16f67e0f6d3b1775682d2f5ad064f4b3eca91ae66d1601528053e5"
+}

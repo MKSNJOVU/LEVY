@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "DELETE from monthly_summaries WHERE month_year < (?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": []
+  },
+  "hash": "3cf6969a0be8d84fd573dfc6bf00af4cd03cc538612233d37b1d20c26f5654bb"
+}

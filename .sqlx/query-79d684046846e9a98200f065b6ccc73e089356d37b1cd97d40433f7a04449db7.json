@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "\n                INSERT OR IGNORE INTO transactions (\n                    account_id, amount, date, description, plaid_transaction_id, pending\n                ) VALUES (?, ?, ?, ?, ?, 0)\n                ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 5
+    },
+    "nullable": []
+  },
+  "hash": "79d684046846e9a98200f065b6ccc73e089356d37b1cd97d40433f7a04449db7"
+}

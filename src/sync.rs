@@ -1,9 +1,9 @@
-use std::collections::HashMap;
-
-use sqlx::{Sqlite, SqlitePool, Transaction};
-
 use crate::account_structs::PlaidItem;
 use crate::plaid::{PlaidAccount, PlaidClient, PlaidTransaction, SyncPage, dollars_to_cents};
+use chrono::Months;
+use chrono::prelude::*;
+use sqlx::{Sqlite, SqlitePool, Transaction};
+use std::collections::HashMap;
 
 #[derive(Debug, Default)]
 pub struct SyncStats {
@@ -221,31 +221,106 @@ async fn upsert_transaction(
 }
 
 /// Shell for executing the transaction sync with strict time boundaries
+
+#[allow(dead_code)]
 pub async fn sync_and_prune_transactions(
     pool: &SqlitePool,
     plaid_client: &PlaidClient,
     access_token: &str,
     inception_date: &str, // Passed in from your DB query of the plaid_items table
 ) -> Result<(), String> {
+    let mut cursor: Option<String> = None;
+    //Fetch from Plaid
 
-    // 1. Fetch from Plaid
-    // todo!("Call plaid_client.transactions_sync(access_token, cursor).await")
+    loop {
+        let transactions = plaid_client
+            .transactions_sync(access_token, cursor.as_deref())
+            .await?;
 
-    // 2. Process Added Transactions
-    // todo!("Loop over the `added` transactions from the SyncPage")
-    // todo!("Check: if tx.pending { continue; }")
+        for tx in &transactions.added {
+            if tx.pending || tx.date.as_str() < inception_date {
+                continue;
+            }
+            let amount_cents = dollars_to_cents(&tx.amount.to_string()).unwrap_or(0);
+            sqlx::query!(
+                r#"
+                INSERT OR IGNORE INTO transactions (
+                    account_id, amount, date, description, plaid_transaction_id, pending
+                ) VALUES (?, ?, ?, ?, ?, 0)
+                "#,
+                tx.account_id,
+                amount_cents,
+                tx.date,
+                tx.name,
+                tx.transaction_id,
+            )
+            .execute(pool)
+            .await
+            .map_err(|e| e.to_string())?;
+        }
 
-    // todo!("Check: if tx.date < inception_date { continue; }")
+        for tx in &transactions.modified {
+            if tx.pending || tx.date.as_str() < inception_date {
+                continue;
+            }
+            let amount_cents = dollars_to_cents(&tx.amount.to_string()).unwrap_or(0);
+            sqlx::query!(
+                r#"
+                UPDATE transactions
+                SET account_id = ?, amount = ?, date = ?, description = ?
+                WHERE plaid_transaction_id = ?
+                "#,
+                tx.account_id,
+                amount_cents,
+                tx.date,
+                tx.name,
+                tx.transaction_id,
+            )
+            .execute(pool)
+            .await
+            .map_err(|e| e.to_string())?;
+        }
 
-    // todo!("If it passes both checks, INSERT the transaction into SQLite")
+        for tx in &transactions.removed {
+            let result_removed = sqlx::query!(
+                "DELETE FROM transactions WHERE plaid_transaction_id = ?",
+                tx.transaction_id
+            )
+            .execute(pool)
+            .await
+            .map_err(|e| e.to_string());
+        }
 
-    // 3. Process Modified and Removed
-    // todo!("Loop over `modified` transactions and UPDATE them in SQLite if they meet criteria")
-    // todo!("Loop over `removed` transactions and DELETE them from SQLite based on transaction_id")
+        if !transactions.has_more {
+            break;
+        } else {
+            cursor = Some(transactions.next_cursor);
+        }
+    }
 
-    // 4. Prune Old Data
-    // todo!("Calculate the cutoff date: current date minus 24 months")
-    // todo!("Execute a DELETE query against your database for any data older than the cutoff date")
+    //  Prune Old Data
+    let cutoff_date = Local::now()
+        .date_naive()
+        .checked_sub_months(Months::new(24))
+        .unwrap()
+        .format("%Y-%m")
+        .to_string();
+
+    let _old_data = sqlx::query!(
+        "DELETE from monthly_summaries WHERE month_year < (?)",
+        cutoff_date,
+    )
+    .execute(pool)
+    .await
+    .map_err(|e| e.to_string())?;
+
+    sqlx::query!(
+        "DELETE FROM transactions WHERE substr(date, 1, 7) < ?",
+        cutoff_date
+    )
+    .execute(pool)
+    .await
+    .map_err(|e| e.to_string())?;
 
     Ok(())
 }

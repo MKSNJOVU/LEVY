@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "\n                UPDATE transactions\n                SET account_id = ?, amount = ?, date = ?, description = ?\n                WHERE plaid_transaction_id = ?\n                ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 5
+    },
+    "nullable": []
+  },
+  "hash": "f1bc2cecd7c122c11bf8aa32048f075288b35c4d553e67f9ed54f0fb0116bc20"
+}
